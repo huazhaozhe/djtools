@@ -9,13 +9,13 @@ from django.db import models
 from base.middleware.globals import global_user
 
 
-class ModelChangedFieldsMixin(object):
+class InstanceChangedFieldsMixin(object):
     '''
     Model对象在save的时候如果没有传update_fields参数，则自动跟踪对象字段的修改，并且在save的时候自动加上update_fields
     '''
 
     def __init__(self, *args, **kwargs):
-        super(ModelChangedFieldsMixin, self).__init__(*args, **kwargs)
+        super(InstanceChangedFieldsMixin, self).__init__(*args, **kwargs)
 
         self._changed_fields = {}  # 初始化字典，用户存储字段变更的信息
 
@@ -36,7 +36,7 @@ class ModelChangedFieldsMixin(object):
                 except field.rel.to.DoesNotExist:
                     old = FieldDoesNotExist
 
-                super(ModelChangedFieldsMixin, self).__setattr__(name, value)  # 赋值
+                super(InstanceChangedFieldsMixin, self).__setattr__(name, value)  # 赋值
                 new = getattr(self, name, FieldDoesNotExist)  # 获取新的属性值
                 try:
                     changed = (old != new)  # 比较
@@ -52,9 +52,9 @@ class ModelChangedFieldsMixin(object):
                         'new': new,
                     }
             else:
-                super(ModelChangedFieldsMixin, self).__setattr__(name, value)
+                super(InstanceChangedFieldsMixin, self).__setattr__(name, value)
         else:
-            super(ModelChangedFieldsMixin, self).__setattr__(name, value)
+            super(InstanceChangedFieldsMixin, self).__setattr__(name, value)
 
     # def save(self, *args, **kwargs):
     #     '''
@@ -65,7 +65,7 @@ class ModelChangedFieldsMixin(object):
     #         'force_insert', False):
     #         kwargs['update_fields'] = [key for key, value in self._changed_fields.iteritems() if hasattr(self, key)]
     #         self._changed_fields = {}
-    #     return super(ModelUpdateFieldsMixin, self).save(*args, **kwargs)
+    #     return super(InstanceChangedFieldsMixin, self).save(*args, **kwargs)
 
 
 class BaseManager(models.Manager):
@@ -78,7 +78,7 @@ class IsDeletedException(Exception):
     pass
 
 
-class BaseModel(models.Model, ModelChangedFieldsMixin):
+class BaseModel(models.Model, InstanceChangedFieldsMixin):
     is_delete = models.BooleanField(verbose_name='是否删除', default=False, blank=True, null=True)
     create_time = models.DateTimeField(verbose_name='创建时间', auto_now_add=True, blank=True, null=True)
     update_time = models.DateTimeField(verbose_name='修改时间', auto_now=True, blank=True, null=True)
