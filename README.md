@@ -1,6 +1,6 @@
 ## Django工具
 
-### 全局对象
+### 全局对象([apps/base/middleware/globals.py](https://github.com/huazhaozhe/djtools/blob/master/apps/base/middleware/globals.py))
 Flask中有4个全局对象(request, session, current_app, g), 可以在Flask的很多地方用到而不需要传入
 Django本身没有提供这样的工具
 
@@ -32,10 +32,10 @@ Django的模型中一般得不到request, 或者每次都需要需要传入参�
 如果有个东西能在request存在的时间段内检测到所有实例更改, 就可以实现这个需求, 刚好Django db模块有好几个内置信号, 在模型实例发生更改前后可以发送信号, 再和全局g对象联合起来, 需求得到实现
 
 用到的东西:
-1. 模型基类继承: 所有用户定义模型均继承自UidBaseModel, 添加一些共用字段
-2. 模型Minix: Django不默认提供update_fields值, 因此混入InstanceChangedFieldsMixin, 添加_changed_fields跟踪实例字段值的变化
-3. Django信号机制: 模型实例在保存删除前后均有信号, 请求完成信号, 这里使用了自定义信号
-4. 全局request和g对象: 在一个request内, 接收模型实例保存删除的信号并得到更改记录, 最终request完成生成记录保存到数据库
+1. 模型基类继承: 所有用户定义模型均继承自UidBaseModel, 添加一些共用字段([apps/base/models.py](https://github.com/huazhaozhe/djtools/blob/master/apps/base/models.py))
+2. 模型Minix: Django不默认提供update_fields值, 因此混入InstanceChangedFieldsMixin, 添加_changed_fields跟踪实例字段值的变化([apps/base/models.py](https://github.com/huazhaozhe/djtools/blob/master/apps/base/models.py))
+3. Django信号机制: 模型实例在保存删除前后均有信号, 接收模型实例保存删除的信号并得到更改记录([apps/operation_record/utils/make_reocrd.py](https://github.com/huazhaozhe/djtools/blob/master/apps/operation_record/utils/make_reocrd.py))
+4. 全局request和g对象: 使用自定义信号, 在request结束的时候将记录保存到数据库([apps/operation_record/signals.py](https://github.com/huazhaozhe/djtools/blob/master/apps/operation_record/signals.py))
 
 
 ### 其他
