@@ -1,0 +1,6 @@
+coreapi
+Django
+django-filter
+django-rest-swagger
+djangorestframework
+Werkzeug
