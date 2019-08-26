@@ -1,15 +1,15 @@
-### Django工具
+## Django工具
 
-#### 全局对象
+### 全局对象
 Flask中有4个全局对象(request, session, current_app, g), 可以在Flask的很多地方用到而不需要传入
-
+Django本身没有提供这样的工具
 
 关于这个的讨论:
 + [Global Django requests](https://nedbatchelder.com/blog/201008/global_django_requests.html)
 + [Django Copy Flask: 实现Flask中的全局request对象](https://smartkeyerror.com/Django-Copy-Flask-%E5%AE%9E%E7%8E%B0Flask%E4%B8%AD%E7%9A%84%E5%85%A8%E5%B1%80request%E5%AF%B9%E8%B1%A1.html)
 
 
-Django本身没有提供这样的工具, 不过有众多的第三方插件实现了:
+有众多的第三方插件实现了:
 + [django-tools ThreadLocal](https://github.com/jedie/django-tools/blob/master/django_tools/middlewares/ThreadLocal.py)
 + [django-globals](https://github.com/svetlyak40wt/django-globals/)
 + ...
@@ -23,12 +23,12 @@ This approach, however, has a few disadvantages. For example, besides threads, t
 另外全局request对象push的地方放在了process_view而不是process_request, 这样可以得到request的body
 
 
-#### 实例的更改的历史记录
+### 实例的更改的历史记录
 
 这个也有几个第三方实现: [django-simple-history](https://github.com/treyhunner/django-simple-history), 使用这些插件必须在每个模型中定义特定字段且需要额外注册步骤
 
-不过有遇到一个需求是, 我需要知道是那个request那个用户, 更改了那些实例的那些值, 更改的值之前和之后的值分别是啥<br>
-Django的模型中一般得不到request, 或者每次都需要需要传入参数
+我有遇到一个需求是, 我需要知道是那个request那个用户, 更改了那些实例的那些值, 更改的值之前和之后的值分别是啥<br>
+Django的模型中一般得不到request, 或者每次都需要需要传入参数<br>
 如果有个东西能在request存在的时间段内检测到所有实例更改, 就可以实现这个需求, 刚好Django db模块有好几个内置信号, 在模型实例发生更改前后可以发送信号, 再和全局g对象联合起来, 需求得到实现
 
 用到的东西:
@@ -38,7 +38,7 @@ Django的模型中一般得不到request, 或者每次都需要需要传入参�
 4. 全局request和g对象: 在一个request内, 接收模型实例保存删除的信号并得到更改记录, 最终request完成生成记录保存到数据库
 
 
-#### 其他
+### 其他
 更改了manage.py, 多个settings配置文件情况下, 需要指定--settings选项, 默认--settings=djtools.settings.base
 ```python
 python manage.py runserver 0:8000 --settings=djtools.settings.local
