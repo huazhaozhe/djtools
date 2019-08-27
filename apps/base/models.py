@@ -11,7 +11,7 @@ from base.middleware.globals import global_request
 
 class InstanceChangedFieldsMixin(object):
     '''
-    Model对象添加_changed_fields属性, 用于跟踪实例值的变化
+    Instance对象添加_changed_fields属性, 用于跟踪实例值的变化
     '''
 
     def __init__(self, *args, **kwargs):
@@ -56,17 +56,6 @@ class InstanceChangedFieldsMixin(object):
         else:
             super(InstanceChangedFieldsMixin, self).__setattr__(name, value)
 
-    # def save(self, *args, **kwargs):
-    #     '''
-    #     重写save方法，传update_fields参数
-    #     '''
-    #     if not self._state.adding and hasattr(self,
-    #                                           '_changed_fields') and 'update_fields' not in kwargs and not kwargs.get(
-    #         'force_insert', False):
-    #         kwargs['update_fields'] = [key for key, value in self._changed_fields.iteritems() if hasattr(self, key)]
-    #         self._changed_fields = {}
-    #     return super(InstanceChangedFieldsMixin, self).save(*args, **kwargs)
-
 
 class BaseManager(models.Manager):
 
@@ -88,13 +77,25 @@ class BaseModel(models.Model, InstanceChangedFieldsMixin):
     existent = BaseManager()
 
     def __str__(self):
-        return '-'.join([str(self.__class__), str(self.id), str(self.is_delete)])
+        return '-'.join([str(self.__class__), str(self._get_pk_val()), str(self.is_delete)])
+
+    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    #     '''
+    #     重写save方法，传update_fields参数
+    #     '''
+    #     if not self._state.adding and hasattr(self, '_changed_fields') and update_fields is None and not force_insert:
+    #         update_fields = [key for key, value in self._changed_fields.items() if hasattr(self, key)]
+    #     return super().save(force_insert=force_insert, force_update=force_update, using=using,
+    #                         update_fields=update_fields)
 
     def delete(self, using=None, keep_parents=False, *args, **kwargs):
+        '''
+        逻辑删除
+        '''
         if kwargs.get('real_delete', False):
             return super().delete(using=using, keep_parents=keep_parents)
         if self.is_delete:
-            raise IsDeletedException('记录 %s 已经逻辑删除!' % self.id)
+            raise IsDeletedException('记录 %s 已经逻辑删除!' % self._get_pk_val())
         self.is_delete = True
         return self.save()
 
@@ -113,7 +114,7 @@ class User(AbstractUser, BaseModel):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if global_request != None and global_request.user.is_authenticated:
-            if self.id is None:
+            if self._get_pk_val() is None and self._state.adding:
                 self.create_user = global_request.user
             else:
                 self.update_user = global_request.user
@@ -132,7 +133,7 @@ class UidBaseModel(BaseModel):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if global_request != None and global_request.user.is_authenticated:
-            if self.id is None:
+            if self._get_pk_val() is None and self._state.adding:
                 self.create_user = global_request.user
             else:
                 self.update_user = global_request.user
