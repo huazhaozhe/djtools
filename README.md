@@ -18,7 +18,7 @@ Django本身没有提供这样的工具
 >The Python standard library has a concept called “thread locals” (or thread-local data). A thread local is a global object in which you can put stuff in and get back later in a thread-safe and thread-specific way. That means that whenever you set or get a value on a thread local object, the thread local object checks in which thread you are and retrieves the value corresponding to your thread (if one exists). So, you won’t accidentally get another thread’s data.<br>
 This approach, however, has a few disadvantages. For example, besides threads, there are other types of concurrency in Python. A very popular one is greenlets. Also, whether every request gets its own thread is not guaranteed in WSGI. It could be that a request is reusing a thread from a previous request, and hence data is left over in the thread local object.
 
-因此参照Flask的全局对象实现, 利用Django的中间件实现了global_request, global_user的全局对象, 外加global_g对象<br>
+因此参照Flask的全局对象实现, 利用Django的中间件实现了global_request和global_g对象<br>
 需要注意的是, 这三个全局对象是和request相关的, 在视图处理request之前生成, 返回response之前销毁, 并且生成和销毁时发送了信号<br>
 另外全局request对象push的地方放在了process_view而不是process_request, 这样可以得到request的body
 

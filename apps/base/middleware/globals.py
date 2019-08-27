@@ -21,7 +21,6 @@ def _lookup_req_object(name):
 
 _request_ctx_stack = LocalStack()
 global_request = LocalProxy(partial(_lookup_req_object, 'request'))
-global_user = LocalProxy(partial(_lookup_req_object, 'user'))
 global_g = LocalProxy(partial(_lookup_req_object, 'g'))
 
 
@@ -34,8 +33,6 @@ class _RequestContext(object):
     def __init__(self, request):
         self.request = request
         self.g = _GlobalsG()
-        self.user = request.user
-        # self.user = request.user._wrapped
 
 
 class GlobalRequestMiddleware(MiddlewareMixin):

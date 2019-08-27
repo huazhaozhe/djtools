@@ -110,5 +110,5 @@ def request_context_push_handler(sender, **kwargs):
 
 @receiver(request_context_pop, dispatch_uid='request_context_pop_uid')
 def request_context_pop_handler(sender, **kwargs):
-    if global_g is not None and hasattr(global_g, 'operation_record'):
+    if global_g is not None and hasattr(global_g, 'operation_record') and global_request.user.is_authenticated:
         save_record(global_g.operation_record)

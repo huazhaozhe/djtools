@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.exceptions import FieldDoesNotExist
 from django.db import models
 
-from base.middleware.globals import global_user
+from base.middleware.globals import global_request
 
 
 class InstanceChangedFieldsMixin(object):
@@ -112,11 +112,11 @@ class User(AbstractUser, BaseModel):
         verbose_name_plural = verbose_name
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if global_user != None and global_user.is_authenticated:
+        if global_request != None and global_request.user.is_authenticated:
             if self.id is None:
-                self.create_user = global_user._wrapped
+                self.create_user = global_request.user
             else:
-                self.update_user = global_user._wrapped
+                self.update_user = global_request.user
         return super().save(force_insert=force_insert, force_update=force_update, using=using,
                             update_fields=update_fields)
 
@@ -131,10 +131,10 @@ class UidBaseModel(BaseModel):
         abstract = True
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if global_user != None and global_user.is_authenticated:
+        if global_request != None and global_request.user.is_authenticated:
             if self.id is None:
-                self.create_user = global_user._wrapped
+                self.create_user = global_request.user
             else:
-                self.update_user = global_user._wrapped
+                self.update_user = global_request.user
         return super().save(force_insert=force_insert, force_update=force_update, using=using,
                             update_fields=update_fields)
