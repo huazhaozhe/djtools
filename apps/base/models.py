@@ -11,7 +11,7 @@ from base.middleware.globals import global_user
 
 class InstanceChangedFieldsMixin(object):
     '''
-    Model对象在save的时候如果没有传update_fields参数，则自动跟踪对象字段的修改，并且在save的时候自动加上update_fields
+    Model对象添加_changed_fields属性, 用于跟踪实例值的变化
     '''
 
     def __init__(self, *args, **kwargs):
