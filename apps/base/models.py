@@ -106,6 +106,10 @@ class BaseModel(models.Model, InstanceChangedFieldsMixin):
 # 需要再settings中设置
 # AUTH_USER_MODEL = 'base.User'
 class User(AbstractUser, BaseModel):
+    create_user = models.ForeignKey('self', verbose_name='创建人', related_name='%(app_label)s_%(class)s_create_user',
+                                    on_delete=models.SET_NULL, null=True, blank=True, default=None)
+    update_user = models.ForeignKey('self', verbose_name='修改人', related_name='%(app_label)s_%(class)s_update_user',
+                                    on_delete=models.SET_NULL, null=True, blank=True, default=None)
     objects = UserManager()
 
     class Meta:
