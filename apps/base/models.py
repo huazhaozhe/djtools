@@ -47,7 +47,7 @@ class InstanceChangedFieldsMixin(object):
                         'old': deepcopy(old),
                         'new': new,
                     }
-                elif self.id is None:
+                elif self._get_pk_val() is None and self._state.adding:
                     self._changed_fields[name] = {
                         'new': new,
                     }
