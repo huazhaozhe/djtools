@@ -10,7 +10,9 @@
 from operation_record.models import RequestRecord, InstanceRecord, InstanceFieldRecord
 
 
-def get_instance_record(table_name, instance_id, order_by=['-create_time']):
+def get_instance_record(table_name, instance_id, order_by=None):
+    if order_by is None:
+        order_by = ['-create_time']
     instance_record = InstanceRecord.objects.filter(table_name=table_name, instance_id=instance_id).order_by(*order_by)
     first = instance_record.first()
     record_dict = {}

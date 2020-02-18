@@ -1,4 +1,4 @@
-## Django工具
+## Django用户操作记录日志
 
 ### 全局对象([apps/base/middleware/globals.py](https://github.com/huazhaozhe/djtools/blob/master/apps/base/middleware/globals.py))
 Flask中有4个全局对象(request, session, current_app, g), 可以在Flask的很多地方用到而不需要传入
@@ -29,7 +29,7 @@ This approach, however, has a few disadvantages. For example, besides threads, t
 
 我有遇到一个需求是, 我需要知道是那个request那个用户, 更改了那些实例的那些值, 更改的值之前和之后的值分别是啥<br>
 Django的模型中一般得不到request, 或者每次都需要需要传入参数<br>
-如果有个东西能在request存在的时间段内检测到所有实例更改, 就可以实现这个需求, 刚好Django db模块有好几个内置信号, 在模型实例发生更改前后可以发送信号, 再和全局g对象联合起来, 需求得到实现
+如果有个东西能在request存在的时间段内检测到所有实例更改, 就可以实现这个需求, 刚好Django db模块有好几个内置信号, 在模型实例发生更改前后可以发送信号, 再和全局g对象结合起来, 需求得到实现
 
 主要有:
 1. 模型基类继承: 所有用户定义模型均继承自UidBaseModel, 添加一些共用字段([apps/base/models.py](https://github.com/huazhaozhe/djtools/blob/master/apps/base/models.py))
